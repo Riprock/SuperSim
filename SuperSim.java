@@ -91,7 +91,7 @@ public class SuperSim
         for(Customer customer: customersToBeMovedToCheckOuts)
         {
             shopFloor.remove(customer);
-            if (customer.getNumberOfItems() < expressCheckOutItemsLimit) {
+            if (customer.getNumberOfItems() <= expressCheckOutItemsLimit) {
                 expressCheckOut.add(customer);
             }
             else {
