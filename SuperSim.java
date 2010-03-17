@@ -14,7 +14,6 @@ public class SuperSim
     private Random rand;
     private ArrayList<CheckOut> checkOuts;
     private ShopFloor shopFloor;
-    // TODO: add another CheckOut, expressCheckOut , initialise it in the constructor - Chiedu
     private CheckOut expressCheckOut;
     private final int iterationLimit;
     private int iterationsSoFar;
@@ -27,7 +26,6 @@ public class SuperSim
     private int itemsUpperLimit;
     // Constants
     private final int shopFloorConstant;
-    // TODO: add expressCheckoutItemsLimit constant, remember the constructors, probs doesn't need an accessor - Chiedu
     private final int expressCheckOutItemsLimit;
     final int checkOutConstant;
     // Non-generic fields for diagnostics
@@ -97,7 +95,6 @@ public class SuperSim
         for(Customer customer: customersToBeMovedToCheckouts)
         {
             shopFloor.remove(customer);
-            // TODO: use the expressCheckout if less than expressCheckoutItemsLimit - Chiedu
             if (customer.getNumberOfItems() < expressCheckOutItemsLimit) {
                 expressCheckOut.add(customer);
             }
