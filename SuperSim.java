@@ -31,6 +31,7 @@ public class SuperSim
     // Non-generic fields for diagnostics
     private int totalCustomersProcessed;
     private int totalWaitIterations;
+    private int totalExpressCustomersProcessed;
 
     /**
      * Constructor for objects of class SuperSim
@@ -73,7 +74,9 @@ public class SuperSim
     private void oneIteration()
     {
         // Move customers who are done out the queues
-        checkCustomerDepart(expressCheckOut);
+        if (checkCustomerDepart(expressCheckOut)) {
+            totalExpressCustomersProcessed++;
+        }
         for (CheckOut checkOut : checkOuts) {
             checkCustomerDepart(checkOut);
         }
@@ -130,11 +133,13 @@ public class SuperSim
         iterationsSoFar++;
     }
     
-    private void checkCustomerDepart(CheckOut checkOut) {
+    private boolean checkCustomerDepart(CheckOut checkOut) {
         if (!checkOut.isEmpty() && checkOut.get(0).getDepartCheckOut() == iterationsSoFar) {
             checkOut.remove(checkOut.get(0));
             totalCustomersProcessed++;
+            return true;
         }
+        return false;
     }
     
     private void checkCustomerProcess(CheckOut checkOut) {
@@ -162,6 +167,7 @@ public class SuperSim
         System.out.println(checkOuts.size() + " Check-Outs needed in addition to the express Check-Out");
         System.out.println(totalCustomers + " customers in total");
         System.out.println(totalCustomersProcessed + " customers processed");
+        System.out.println(totalExpressCustomersProcessed + " customers used the express Check-Out");
         System.out.println("mean of " + ((float) totalWaitIterations / (float) totalCustomersProcessed) + " iterations before customer reaches front of queue");
         System.out.println();
     }
