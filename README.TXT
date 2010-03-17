@@ -10,3 +10,5 @@ VERSION or DATE:
 HOW TO START THIS PROJECT:
 AUTHORS:
 USER INSTRUCTIONS:
+
+TODO: More stats. Like average item count, average time on shop floor, different between express Check-Out and other Check-Outs. Make method for getting stats from customer when they leave, instead of stats being dotted around. - Fergal
