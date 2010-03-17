@@ -73,26 +73,22 @@ public class SuperSim
     private void oneIteration()
     {
         // Move customers who are done out the queues
-        int checkOutsCount = checkOuts.size();
-        for (int i = 0; i < checkOutsCount; i++) {
-            CheckOut checkOut = checkOuts.get(i);
-            if (!checkOut.isEmpty() && checkOut.get(0).getDepartCheckOut() == iterationsSoFar) {
-                checkOut.remove(checkOut.get(0));
-                totalCustomersProcessed++;
-            }
+        checkCustomerDepart(expressCheckOut);
+        for (CheckOut checkOut : checkOuts) {
+            checkCustomerDepart(checkOut);
         }
         
         // Move Customers from ShopFloor to CheckOuts
-        ArrayList<Customer> customersToBeMovedToCheckouts = new ArrayList<Customer>();
+        ArrayList<Customer> customersToBeMovedToCheckOuts = new ArrayList<Customer>();
         for(Customer customer: shopFloor)
         {
             if (customer.getDepartShopFloor() == iterationsSoFar)
             {
-                customersToBeMovedToCheckouts.add(customer);
+                customersToBeMovedToCheckOuts.add(customer);
             }
         }
         
-        for(Customer customer: customersToBeMovedToCheckouts)
+        for(Customer customer: customersToBeMovedToCheckOuts)
         {
             shopFloor.remove(customer);
             if (customer.getNumberOfItems() < expressCheckOutItemsLimit) {
@@ -125,18 +121,30 @@ public class SuperSim
             newCustomer();
         }
         
+        // Start processing customer at front of queue if necessary
+        checkCustomerProcess(expressCheckOut);
         for (CheckOut checkOut : checkOuts) {
-            // Start processing customer at front of queue if necessary
-            if (!checkOut.isEmpty()) {
-                Customer customer = checkOut.get(0);
-                if (customer.getDepartCheckOut() == 0) {
-                    customer.process(iterationsSoFar);
-                    totalWaitIterations += iterationsSoFar - customer.getArrivedCheckOut();
-                }
-            }
+            checkCustomerProcess(checkOut);
         }
         
         iterationsSoFar++;
+    }
+    
+    private void checkCustomerDepart(CheckOut checkOut) {
+        if (!checkOut.isEmpty() && checkOut.get(0).getDepartCheckOut() == iterationsSoFar) {
+            checkOut.remove(checkOut.get(0));
+            totalCustomersProcessed++;
+        }
+    }
+    
+    private void checkCustomerProcess(CheckOut checkOut) {
+        if (!checkOut.isEmpty()) {
+            Customer customer = checkOut.get(0);
+            if (customer.getDepartCheckOut() == 0) {
+                customer.process(iterationsSoFar);
+                totalWaitIterations += iterationsSoFar - customer.getArrivedCheckOut();
+            }
+        }
     }
     
     private void newCustomer()
