@@ -156,27 +156,27 @@ public class SuperSim
     // Distribution
     public double getCustomerProb()
     {
-    	return customerProb;
+        return customerProb;
     }
     
     public int getItemsMean()
     {
-    	return itemsMean;
+        return itemsMean;
     }
     
     public int getItemsStandardDeviation()
     {
-    	return itemsStandardDeviation;
+        return itemsStandardDeviation;
     }
     
     public int getItemsLowerLimit()
     {
-    	return itemsLowerLimit;
+        return itemsLowerLimit;
     }
     
     public int getItemsUpperLimit()
     {
-    	return itemsUpperLimit;
+        return itemsUpperLimit;
     }
     // Simulation
     public int getIterationsSoFar()
