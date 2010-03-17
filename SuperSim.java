@@ -15,6 +15,7 @@ public class SuperSim
     private ArrayList<CheckOut> checkOuts;
     private ShopFloor shopFloor;
     // TODO: add another CheckOut, expressCheckOut , initialise it in the constructor - Chiedu
+    private CheckOut expressCheckOut;
     private final int iterationLimit;
     private int iterationsSoFar;
     private double customerProb;
@@ -27,6 +28,7 @@ public class SuperSim
     // Constants
     private final int shopFloorConstant;
     // TODO: add expressCheckoutItemsLimit constant, remember the constructors, probs doesn't need an accessor - Chiedu
+    private final int expressCheckOutItemsLimit;
     final int checkOutConstant;
     // Non-generic fields for diagnostics
     private int totalCustomersProcessed;
@@ -35,7 +37,7 @@ public class SuperSim
     /**
      * Constructor for objects of class SuperSim
      */
-    public SuperSim(int iterations, double customerProb, int itemsMean, int itemsStandardDeviation, int itemsUpperLimit, int itemsLowerLimit, int checkOutConstant, int shopFloorConstant)
+    public SuperSim(int iterations, double customerProb, int itemsMean, int itemsStandardDeviation, int itemsUpperLimit, int itemsLowerLimit, int checkOutConstant, int shopFloorConstant, int expressCheckOutItemsLimit)
     {
         // Structure
         rand = new Random();
@@ -43,6 +45,7 @@ public class SuperSim
         CheckOut checkOut = new CheckOut();
         checkOuts.add(checkOut);
         shopFloor = new ShopFloor();
+        expressCheckOut = new CheckOut();
         
         // SuperSim
         iterationsSoFar = 0;
@@ -56,6 +59,7 @@ public class SuperSim
         this.itemsUpperLimit = itemsUpperLimit;
         this.checkOutConstant = checkOutConstant;
         this.shopFloorConstant = shopFloorConstant;
+        this.expressCheckOutItemsLimit = expressCheckOutItemsLimit;
         
         // Run the simulation
         for (int i = 0; i < iterations; i++) {
@@ -65,7 +69,7 @@ public class SuperSim
     
     public SuperSim(int iterations)
     {
-        this(iterations, (0.5/60.0), 11, 4, 1, 30, 5, 20);
+        this(iterations, (0.5/60.0), 11, 4, 1, 30, 5, 20, 10);
     }
     
     private void oneIteration()
@@ -84,7 +88,7 @@ public class SuperSim
         ArrayList<Customer> customersToBeMovedToCheckouts = new ArrayList<Customer>();
         for(Customer customer: shopFloor)
         {
-            if( customer.getDepartShopFloor() == iterationsSoFar)
+            if (customer.getDepartShopFloor() == iterationsSoFar)
             {
                 customersToBeMovedToCheckouts.add(customer);
             }
@@ -94,23 +98,28 @@ public class SuperSim
         {
             shopFloor.remove(customer);
             // TODO: use the expressCheckout if less than expressCheckoutItemsLimit - Chiedu
-            int bestCheckOut = 0;
-            int bestCheckOutSize = 4;
-            int checkOutCount = checkOuts.size();
-            for (int i = 0; i < checkOutCount; i++) {
-                int checkOutSize = checkOuts.get(i).size();
-                if (checkOutSize < bestCheckOutSize) {
-                    bestCheckOut = i;
-                    bestCheckOutSize = checkOutSize;
-                }
-            }
-            if (bestCheckOutSize < 4) {
-                checkOuts.get(bestCheckOut).add(customer);
+            if (customer.getNumberOfItems() < expressCheckOutItemsLimit) {
+                expressCheckOut.add(customer);
             }
             else {
-                CheckOut newCheckOut = new CheckOut();
-                newCheckOut.add(customer);
-                checkOuts.add(newCheckOut);
+                int bestCheckOut = 0;
+                int bestCheckOutSize = 4;
+                int checkOutCount = checkOuts.size();
+                for (int i = 0; i < checkOutCount; i++) {
+                    int checkOutSize = checkOuts.get(i).size();
+                    if (checkOutSize < bestCheckOutSize) {
+                        bestCheckOut = i;
+                        bestCheckOutSize = checkOutSize;
+                    }
+                }
+                if (bestCheckOutSize < 4) {
+                    checkOuts.get(bestCheckOut).add(customer);
+                }
+                else {
+                    CheckOut newCheckOut = new CheckOut();
+                    newCheckOut.add(customer);
+                    checkOuts.add(newCheckOut);
+                }
             }
         }
         
