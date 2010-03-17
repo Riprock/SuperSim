@@ -10,11 +10,6 @@ import java.util.Random;
 
 public class Customer
 {
-    // TODO: add new fields for arriving at and departing the ShopFloor - Janie
-    // TODO: add appropriate accessors for above - Janie
-    // TODO: rename current arrived and depart to avoid ambiguity - Janie
-    // TODO: add field for arrival at back of checkout (for stats) - Janie
-    // NOTE: agreed names:
     private int arrivedShopFloor;
     private int departShopFloor;
     private int arrivedCheckOut;
@@ -28,7 +23,6 @@ public class Customer
         this.superSim = superSim;
         arrivedShopFloor = this.superSim.getIterationsSoFar();
         numberOfItems = calcNumberOfItems();
-        // TODO: set departShopFloor here, remember superSim.getShopFloorConstant() - Janie
         departShopFloor = numberOfItems * superSim.getShopFloorConstant() + arrivedShopFloor;
         arrivedCheckOut = departShopFloor;
     }

@@ -10,5 +10,3 @@ VERSION or DATE:
 HOW TO START THIS PROJECT:
 AUTHORS:
 USER INSTRUCTIONS:
-
-TODO: new class ShopFloor, that is essentially an ArrayList<Customer> like CheckOut - Janie

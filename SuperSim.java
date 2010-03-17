@@ -25,7 +25,6 @@ public class SuperSim
     int itemsLowerLimit;
     int itemsUpperLimit;
     // Constants
-    // TODO: add shopFloorConstant. Remember to change the constructors and add an accessor - Yowana
     private final int shopFloorConstant;
     // TODO: add expressCheckoutItemsLimit constant, remember the constructors, probs doesn't need an accessor - Chiedu
     final int checkOutConstant;
@@ -81,7 +80,7 @@ public class SuperSim
             }
         }
         
-        // TODO: move Customers from ShopFloor to CheckOuts - Janie
+        // Move Customers from ShopFloor to CheckOuts
         ArrayList<Customer> customersToBeMovedToCheckouts = new ArrayList<Customer>();
         for(Customer customer: shopFloor)
         {
@@ -137,11 +136,8 @@ public class SuperSim
     private void newCustomer()
     {
         Customer customer = new Customer(this);
-        // TODO: new Customers go to the ShopFloor instead of direct to CheckOuts - Janie
         shopFloor.add(customer);
-        // TODO: use following code in a loop for the Customers coming out the ShopFloor in oneIteration() - Janie
         
-        // TODO: keep totalCustomers++ here in newCustomer() - Janie I guess, but don't really have to do anything
         totalCustomers++;
     }
     
