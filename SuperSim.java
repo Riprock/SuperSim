@@ -20,10 +20,10 @@ public class SuperSim
     private double customerProb;
     private int totalCustomers;
     // Stuff for the normal distribution
-    int itemsMean;
-    int itemsStandardDeviation;
-    int itemsLowerLimit;
-    int itemsUpperLimit;
+    private int itemsMean;
+    private int itemsStandardDeviation;
+    private int itemsLowerLimit;
+    private int itemsUpperLimit;
     // Constants
     private final int shopFloorConstant;
     // TODO: add expressCheckoutItemsLimit constant, remember the constructors, probs doesn't need an accessor - Chiedu
