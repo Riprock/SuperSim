@@ -159,7 +159,7 @@ public class SuperSim
     {
         System.out.println(iterationLimit + " iterations");
         System.out.println(customerProb + " probability of a new customer every iteration");
-        System.out.println(checkOuts.size() + " Check-Ins needed");
+        System.out.println(checkOuts.size() + " Check-Outs needed in addition to the express Check-Out");
         System.out.println(totalCustomers + " customers in total");
         System.out.println(totalCustomersProcessed + " customers processed");
         System.out.println("mean of " + ((float) totalWaitIterations / (float) totalCustomersProcessed) + " iterations before customer reaches front of queue");
