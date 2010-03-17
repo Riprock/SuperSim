@@ -15,22 +15,22 @@ public class Customer
     // TODO: rename current arrived and depart to avoid ambiguity - Janie
     // TODO: add field for arrival at back of checkout (for stats) - Janie
     // NOTE: agreed names:
-    //  int arrivedShopFloor
-    //  int departShopFloor
-    //  int arrivedCheckOut
-    //  int arrivedFrontCheckOut
-    //  int departCheckOut
+    private int arrivedShopFloor;
+    private int departShopFloor;
+    private int arrivedCheckOut;
+    private int arrivedFrontCheckOut;
+    private int departCheckOut;
     private SuperSim superSim;
-    private final int arrived;
-    private int depart;
     private final int numberOfItems;
 
     public Customer(SuperSim superSim)
     {
         this.superSim = superSim;
-        this.arrived = this.superSim.getIterationsSoFar();
+        arrivedShopFloor = this.superSim.getIterationsSoFar();
         numberOfItems = calcNumberOfItems();
         // TODO: set departShopFloor here, remember superSim.getShopFloorConstant() - Janie
+        departShopFloor = numberOfItems * superSim.getShopFloorConstant() + arrivedShopFloor;
+        arrivedCheckOut = departShopFloor;
     }
 
     private int calcNumberOfItems()
@@ -56,9 +56,9 @@ public class Customer
     }
     
     // Accessors
-    public int getDepart()
+    public int getArrivedShopFloor()
     {
-        return depart;
+        return arrivedShopFloor;
     }
     
     public int getNumberOfItems()
@@ -66,14 +66,30 @@ public class Customer
         return numberOfItems;
     }
     
-    public int getArrived()
+    public int getDepartShopFloor()
     {
-        return arrived;
+        return departShopFloor;
+    }
+    
+    public int getArrivedCheckOut()
+    {
+        return arrivedCheckOut;
+    }
+    
+    public int getArrivedFrontCheckOut()
+    {
+        return arrivedFrontCheckOut;
+    }
+    
+    public int getDepartCheckOut()
+    {
+        return departCheckOut;
     }
     
     // Mutators
     public void process(int iterations)
     {
-        depart = iterations + numberOfItems * superSim.getCheckOutConstant();
+        arrivedFrontCheckOut = iterations;
+        departCheckOut = arrivedFrontCheckOut + numberOfItems * superSim.getCheckOutConstant();
     }
 }
