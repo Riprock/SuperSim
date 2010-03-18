@@ -74,9 +74,7 @@ public class SuperSim
     private void oneIteration()
     {
         // Move customers who are done out the queues
-        if (checkCustomerDepart(expressCheckOut)) {
-            totalExpressCustomersProcessed++;
-        }
+        checkCustomerDepart(expressCheckOut);
         for (CheckOut checkOut : checkOuts) {
             checkCustomerDepart(checkOut);
         }
@@ -135,20 +133,30 @@ public class SuperSim
     
     private boolean checkCustomerDepart(CheckOut checkOut) {
         if (!checkOut.isEmpty() && checkOut.get(0).getDepartCheckOut() == iterationsSoFar) {
-            checkOut.remove(checkOut.get(0));
-            totalCustomersProcessed++;
+            Customer customer = checkOut.get(0);
+            gatherDepartStats(customer);
+            checkOut.remove(customer);
             return true;
         }
         return false;
     }
     
-    private void checkCustomerProcess(CheckOut checkOut) {
+    private boolean checkCustomerProcess(CheckOut checkOut) {
         if (!checkOut.isEmpty()) {
             Customer customer = checkOut.get(0);
             if (customer.getDepartCheckOut() == 0) {
                 customer.process(iterationsSoFar);
-                totalWaitIterations += iterationsSoFar - customer.getArrivedCheckOut();
+                return true;
             }
+        }
+        return false;
+    }
+    
+    private void gatherDepartStats(Customer customer) {
+        totalCustomersProcessed++;
+        totalWaitIterations += customer.getArrivedFrontCheckOut() - customer.getArrivedCheckOut();
+        if (customer.getNumberOfItems() <= expressCheckOutItemsLimit) {
+            totalExpressCustomersProcessed++;
         }
     }
     
