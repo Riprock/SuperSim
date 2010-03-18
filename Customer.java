@@ -12,7 +12,6 @@ public class Customer
 {
     private int arrivedShopFloor;
     private int departShopFloor;
-    private int arrivedCheckOut;
     private int arrivedFrontCheckOut;
     private int departCheckOut;
     private SuperSim superSim;
@@ -24,7 +23,6 @@ public class Customer
         arrivedShopFloor = this.superSim.getIterationsSoFar();
         numberOfItems = calcNumberOfItems();
         departShopFloor = numberOfItems * superSim.getShopFloorConstant() + arrivedShopFloor;
-        arrivedCheckOut = departShopFloor;
     }
 
     private int calcNumberOfItems()
@@ -65,11 +63,6 @@ public class Customer
         return departShopFloor;
     }
     
-    public int getArrivedCheckOut()
-    {
-        return arrivedCheckOut;
-    }
-    
     public int getArrivedFrontCheckOut()
     {
         return arrivedFrontCheckOut;
@@ -81,9 +74,9 @@ public class Customer
     }
     
     // Mutators
-    public void process(int iterations)
+    public void process()
     {
-        arrivedFrontCheckOut = iterations;
+        arrivedFrontCheckOut = superSim.getIterationsSoFar();
         departCheckOut = arrivedFrontCheckOut + numberOfItems * superSim.getCheckOutConstant();
     }
 }

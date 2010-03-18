@@ -145,7 +145,7 @@ public class SuperSim
         if (!checkOut.isEmpty()) {
             Customer customer = checkOut.get(0);
             if (customer.getDepartCheckOut() == 0) {
-                customer.process(iterationsSoFar);
+                customer.process();
                 return true;
             }
         }
@@ -154,7 +154,7 @@ public class SuperSim
     
     private void gatherDepartStats(Customer customer) {
         totalCustomersProcessed++;
-        totalWaitIterations += customer.getArrivedFrontCheckOut() - customer.getArrivedCheckOut();
+        totalWaitIterations += customer.getArrivedFrontCheckOut() - customer.getDepartShopFloor();
         if (customer.getNumberOfItems() <= expressCheckOutItemsLimit) {
             totalExpressCustomersProcessed++;
         }
