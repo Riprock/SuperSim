@@ -2,17 +2,19 @@
 /**
  * Write a description of class Simulation here.
  * 
- * @author Fergal Hainey
+ * @author Fergal Hainey, Janie Sinclair, Chiedu Agborh, Yowana Kuvoka
  * @version 2010.03.02
  */
 
 import java.util.Random;
 import java.util.ArrayList;
+import simpleIO.TextReader;
 
 public class SuperSim
 {
     private Random rand;
     private ArrayList<CheckOut> checkOuts;
+    private ArrayList<Item> stockList;
     private ShopFloor shopFloor;
     private CheckOut expressCheckOut;
     private final int iterationLimit;
@@ -60,6 +62,10 @@ public class SuperSim
         this.shopFloorConstant = shopFloorConstant;
         this.expressCheckOutItemsLimit = expressCheckOutItemsLimit;
         
+        // get Items
+        stockList = new ArrayList<Item>();
+        populateStockList();
+        
         // Run the simulation
         for (int i = 0; i < iterations; i++) {
             oneIteration();
@@ -69,6 +75,19 @@ public class SuperSim
     public SuperSim(int iterations)
     {
         this(iterations, (0.5/60.0), 11, 4, 1, 30, 5, 20, 10);
+    }
+    
+    // read all items from text file to an arraylist of items
+    private boolean populateStockList()
+    {
+        TextReader tr = new TextReader("items.txt");
+        
+        String line;
+        while ((line = tr.readLine()) != null) {
+            String[] fields = line.split("\t");
+            stockList.add(new Item(fields[0], Integer.parseInt(fields[1]), fields[2]));
+        }
+        return true;
     }
     
     private void oneIteration()
@@ -206,6 +225,12 @@ public class SuperSim
     {
         return itemsUpperLimit;
     }
+    
+    public ArrayList getStockList()
+    {
+        return stockList;
+    }
+    
     // Simulation
     public int getIterationsSoFar()
     {

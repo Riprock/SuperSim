@@ -2,11 +2,12 @@
 /**
  * A customer.
  * 
- * @author Fergal Hainey
+ * @author Fergal Hainey, Janie Sinclair, Chiedu Agborh, Yowana Kuvoka
  * @version 2010.03.02
  */
 
 import java.util.Random;
+import java.util.ArrayList;
 
 public class Customer
 {
@@ -16,6 +17,7 @@ public class Customer
     private int departCheckOut;
     private SuperSim superSim;
     private final int numberOfItems;
+    private ArrayList<Item> shoppingBasket;
 
     public Customer(SuperSim superSim)
     {
@@ -23,6 +25,8 @@ public class Customer
         arrivedShopFloor = this.superSim.getIterationsSoFar();
         numberOfItems = calcNumberOfItems();
         departShopFloor = numberOfItems * superSim.getShopFloorConstant() + arrivedShopFloor;
+        shoppingBasket = new ArrayList<Item>();
+        fillBasket();
     }
 
     private int calcNumberOfItems()
@@ -45,6 +49,17 @@ public class Customer
         while (gaussian >= standardLowerLimit && gaussian <= standardUpperLimit);
         
         return (int) Math.round((gaussian * itemsStandardDeviation) + itemsMean);
+    }
+    //Janie, fill arraylist of items with items randomly selected from StockList
+    private void fillBasket()
+    {
+        for(int i = 0; i < numberOfItems ; i++)
+        {
+            ArrayList<Item> x = superSim.getStockList();
+            Random z = superSim.getRand();
+            Item y = x.get(z.nextInt(x.size()));
+            shoppingBasket.add(y);
+        }
     }
     
     // Accessors
@@ -71,6 +86,11 @@ public class Customer
     public int getDepartCheckOut()
     {
         return departCheckOut;
+    }
+    
+    public ArrayList<Item> getItems()
+    {
+        return shoppingBasket;
     }
     
     // Mutators
