@@ -34,7 +34,7 @@ public class SuperSim
     // Constants
     private final int shopFloorConstant;
     private final int expressCheckOutItemsLimit;
-    final int checkOutConstant;
+    private final int checkOutConstant;
     // Non-generic fields for diagnostics
     private int totalCustomersProcessed;
     private int totalWaitIterations;
