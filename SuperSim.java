@@ -286,11 +286,6 @@ public class SuperSim
         out.close();
     }
     
-    public Set<Map.Entry<Integer, ArrayList<String>>> testLoyaltyEntries()
-    {
-        return loyaltyPurchases.entrySet();
-    }
-    
     // Accessors
     // Distribution
     public double getCustomerProb()
