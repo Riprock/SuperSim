@@ -60,7 +60,7 @@ public class Customer
         {
             String[] barcodes = superSim.getStockListBarcodes();
             Random z = superSim.getRand();
-            Item y = superSim.getStockList().get(superSim.getStockListBarcodes()[z.nextInt(superSim.getStockListBarcodes().length)]);
+            Item y = superSim.getStockList().get(barcodes[z.nextInt(barcodes.length)]);
             shoppingBasket.add(y);
         }
     }
