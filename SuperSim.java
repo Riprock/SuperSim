@@ -286,6 +286,11 @@ public class SuperSim
         totalCustomers++;
     }
     
+    /**
+     * Print some simple statistics to STDOUT.
+     * 
+     * Good for getting a quick idea of how a simulation went.
+     */
     public void printInfo()
     {
         System.out.println(iterationLimit + " iterations");
@@ -298,6 +303,13 @@ public class SuperSim
         System.out.println();
     }
     
+    /**
+     * Write out information about what customers bought, which can be used for tracking loyalty purchases.
+     * 
+     * The user will be prompted for a file to write the data out to. Each customers data is separated by an empty line. 
+     * The first line for each customer is their unique ID, the following lines are the barcodes of the items they bought 
+     * and the last line is the total amount they spent in pence (no floating point arithmetic allowed).
+     */
     public void writeLoyalty()
     {
         String loyaltyOutput = "";
