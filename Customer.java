@@ -11,6 +11,8 @@ import java.util.ArrayList;
 
 public class Customer
 {
+    private static int nextId = 1;
+    private int id;
     private int arrivedShopFloor;
     private int departShopFloor;
     private int arrivedFrontCheckOut;
@@ -21,6 +23,7 @@ public class Customer
 
     public Customer(SuperSim superSim)
     {
+        makeId();
         this.superSim = superSim;
         arrivedShopFloor = this.superSim.getIterationsSoFar();
         numberOfItems = calcNumberOfItems();
@@ -55,11 +58,18 @@ public class Customer
     {
         for(int i = 0; i < numberOfItems ; i++)
         {
-            ArrayList<Item> x = superSim.getStockList();
+            String[] barcodes = superSim.getStockListBarcodes();
             Random z = superSim.getRand();
-            Item y = x.get(z.nextInt(x.size()));
+            Item y = superSim.getStockList().get(superSim.getStockListBarcodes()[z.nextInt(superSim.getStockListBarcodes().length)]);
             shoppingBasket.add(y);
         }
+    }
+    
+    // set the customers unique number and increment the static id counter thing
+    private void makeId()
+    {
+        id = nextId;
+        nextId++;
     }
     
     // Accessors
@@ -91,6 +101,11 @@ public class Customer
     public ArrayList<Item> getItems()
     {
         return shoppingBasket;
+    }
+    
+    public int getId()
+    {
+        return id;
     }
     
     // Mutators

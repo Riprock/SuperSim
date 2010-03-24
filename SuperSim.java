@@ -8,13 +8,18 @@
 
 import java.util.Random;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 import simpleIO.TextReader;
+import simpleIO.TextWriter;
+import java.util.Set;
 
 public class SuperSim
 {
     private Random rand;
     private ArrayList<CheckOut> checkOuts;
-    private ArrayList<Item> stockList;
+    private HashMap<String, Item> stockList;
+    private String[] stockListBarcodes;
     private ShopFloor shopFloor;
     private CheckOut expressCheckOut;
     private final int iterationLimit;
@@ -34,6 +39,7 @@ public class SuperSim
     private int totalCustomersProcessed;
     private int totalWaitIterations;
     private int totalExpressCustomersProcessed;
+    private HashMap<Integer, ArrayList<String>> loyaltyPurchases;
 
     /**
      * Constructor for objects of class SuperSim
@@ -61,10 +67,13 @@ public class SuperSim
         this.checkOutConstant = checkOutConstant;
         this.shopFloorConstant = shopFloorConstant;
         this.expressCheckOutItemsLimit = expressCheckOutItemsLimit;
+        // stats
+        loyaltyPurchases = new HashMap<Integer, ArrayList<String>>();
         
         // get Items
-        stockList = new ArrayList<Item>();
+        stockList = new HashMap<String, Item>();
         populateStockList();
+        stockListBarcodes = stockList.keySet().toArray(new String[stockList.size()]);
         
         // Run the simulation
         for (int i = 0; i < iterations; i++) {
@@ -85,7 +94,7 @@ public class SuperSim
         String line;
         while ((line = tr.readLine()) != null) {
             String[] fields = line.split("\t");
-            stockList.add(new Item(fields[0], Integer.parseInt(fields[1]), fields[2]));
+            stockList.put(fields[2], new Item(fields[0], Integer.parseInt(fields[1]), fields[2]));
         }
         return true;
     }
@@ -177,6 +186,11 @@ public class SuperSim
         if (customer.getNumberOfItems() <= expressCheckOutItemsLimit) {
             totalExpressCustomersProcessed++;
         }
+        ArrayList<String> barcodesList = new ArrayList<String>();
+        for (Item item : customer.getItems()) {
+            barcodesList.add(item.getBarcode());
+        }
+        loyaltyPurchases.put(customer.getId(), barcodesList);
     }
     
     private void newCustomer()
@@ -197,6 +211,29 @@ public class SuperSim
         System.out.println(totalExpressCustomersProcessed + " customers used the express Check-Out");
         System.out.println("mean of " + ((float) totalWaitIterations / (float) totalCustomersProcessed) + " iterations before customer reaches front of queue");
         System.out.println();
+    }
+    
+    public void writeLoyalty()
+    {
+        String loyaltyOutput = "";
+        for (Map.Entry<Integer, ArrayList<String>> entry : loyaltyPurchases.entrySet()) {
+            loyaltyOutput += (entry.getKey() + "\n");
+            int totalPence = 0;
+            for (String barcode : entry.getValue()) {
+                totalPence += stockList.get(barcode).getPrice();
+                loyaltyOutput += (barcode + "\n");
+            }
+            loyaltyOutput += (totalPence + "\n\n");
+        }
+    
+        TextWriter out = new TextWriter("");
+        out.writeString(loyaltyOutput);
+        out.close();
+    }
+    
+    public Set<Map.Entry<Integer, ArrayList<String>>> testLoyaltyEntries()
+    {
+        return loyaltyPurchases.entrySet();
     }
     
     // Accessors
@@ -226,9 +263,14 @@ public class SuperSim
         return itemsUpperLimit;
     }
     
-    public ArrayList getStockList()
+    public HashMap<String, Item> getStockList()
     {
         return stockList;
+    }
+    
+    public String[] getStockListBarcodes()
+    {
+        return stockListBarcodes;
     }
     
     // Simulation
