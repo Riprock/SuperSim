@@ -89,11 +89,11 @@ public class SuperSim
     // read all items from text file to an arraylist of items
     private boolean populateStockList()
     {
-        TextReader tr = new TextReader("items.txt");
+        TextReader tr = new TextReader("items.csv");
         
         String line;
         while ((line = tr.readLine()) != null) {
-            String[] fields = line.split("\t");
+            String[] fields = line.split(",");
             stockList.put(fields[2], new Item(fields[0], Integer.parseInt(fields[1]), fields[2]));
         }
         return true;
