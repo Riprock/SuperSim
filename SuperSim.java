@@ -13,6 +13,7 @@ import java.util.HashMap;
 import simpleIO.TextReader;
 import simpleIO.TextWriter;
 import java.util.Set;
+import java.io.IOException;
 
 public class SuperSim
 {
@@ -25,6 +26,9 @@ public class SuperSim
     private final int iterationLimit;
     private int iterationsSoFar;
     private double customerProb;
+    private Integer[] probDataIterations;
+    private Double[] probDataProbs;
+    private int lastProbIndex;
     private int totalCustomers;
     // Stuff for the normal distribution
     private int itemsMean;
@@ -74,6 +78,36 @@ public class SuperSim
         stockList = new HashMap<String, Item>();
         populateStockList();
         stockListBarcodes = stockList.keySet().toArray(new String[stockList.size()]);
+        
+        // Variable customerProb?
+        try {
+            if (customerProb < 0) {
+                TextReader tr = new TextReader("customerprobs.csv");
+                // Why didn't whoever made TextReader make it more like an Iterable?
+                String line;
+                ArrayList<Integer> tempIterations = new ArrayList<Integer>();
+                ArrayList<Double> tempProbs = new ArrayList<Double>();
+                boolean firstLine = true;
+                while ((line = tr.readLine()) != null) {
+                    String[] fields = line.split(",");
+                    if (firstLine && Integer.parseInt(fields[0]) != 0) {
+                        throw new IOException("First iteration datapoint for customer probability is not 0!");
+                    }
+                    firstLine = false;
+                    tempIterations.add(Integer.parseInt(fields[0]));
+                    tempProbs.add(Double.parseDouble(fields[1]));
+                }
+                probDataIterations = tempIterations.toArray(new Integer[tempIterations.size()]);
+                probDataProbs = tempProbs.toArray(new Double[tempProbs.size()]);
+                tempIterations = null;
+                tempProbs = null;
+                Runtime.getRuntime().gc();
+            }
+        }
+        catch(IOException e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
+        }
         
         // Run the simulation
         for (int i = 0; i < iterations; i++) {
@@ -145,8 +179,29 @@ public class SuperSim
             }
         }
         
+        double currentCustomerProb = customerProb;
+        // Calculate currentCustomerProb if variable.
+        if (customerProb < 0) {
+            for (int i = lastProbIndex; i < probDataIterations.length; i++) {
+                if (probDataIterations[i] == iterationsSoFar) {
+                    currentCustomerProb = probDataProbs[i];
+                    break;
+                }
+                else if (probDataIterations[i] > iterationsSoFar) {
+                    int iterationRange = probDataIterations[i] - probDataIterations[i-1];
+                    double probRange = probDataProbs[i] - probDataProbs[i-1];
+                    double proportionOfRange = (double) (iterationsSoFar - probDataIterations[i-1]) / (double) iterationRange;
+                    currentCustomerProb = probDataProbs[i-1] + (probRange * proportionOfRange);
+                    lastProbIndex = i;
+                    break;
+                }
+                // Due to breaks this should only be the final result when at the end of the array (basically flatline from last data point)
+                currentCustomerProb = probDataProbs[i];
+            }
+        }
+                    
         // Is there a new customer?
-        if (rand.nextFloat() < customerProb) {
+        if (rand.nextFloat() < currentCustomerProb) {
             newCustomer();
         }
         
@@ -204,7 +259,7 @@ public class SuperSim
     public void printInfo()
     {
         System.out.println(iterationLimit + " iterations");
-        System.out.println(customerProb + " probability of a new customer every iteration");
+        System.out.println(((customerProb < 0) ? "Variable" : customerProb) + " probability of a new customer every iteration");
         System.out.println(checkOuts.size() + " Check-Outs needed in addition to the express Check-Out");
         System.out.println(totalCustomers + " customers in total");
         System.out.println(totalCustomersProcessed + " customers processed");
