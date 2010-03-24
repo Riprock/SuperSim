@@ -49,9 +49,8 @@ public class Customer
         do {
             gaussian = rand.nextGaussian();
         }
-        while (gaussian >= standardLowerLimit && gaussian <= standardUpperLimit);
-        
-        return (int) Math.round((gaussian * itemsStandardDeviation) + itemsMean);
+        while (gaussian <= standardLowerLimit && gaussian >= standardUpperLimit);
+        return (int) Math.round((gaussian * (double) itemsStandardDeviation) + (double) itemsMean);
     }
     //Janie, fill arraylist of items with items randomly selected from StockList
     private void fillBasket()

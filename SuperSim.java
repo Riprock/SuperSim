@@ -48,7 +48,7 @@ public class SuperSim
     /**
      * Constructor for objects of class SuperSim
      */
-    public SuperSim(int iterations, double customerProb, int itemsMean, int itemsStandardDeviation, int itemsUpperLimit, int itemsLowerLimit, int checkOutConstant, int shopFloorConstant, int expressCheckOutItemsLimit)
+    public SuperSim(int iterations, double customerProb, int itemsMean, int itemsStandardDeviation, int itemsLowerLimit, int itemsUpperLimit, int checkOutConstant, int shopFloorConstant, int expressCheckOutItemsLimit)
     {
         // Structure
         rand = new Random();
@@ -117,7 +117,7 @@ public class SuperSim
     
     public SuperSim(int iterations)
     {
-        this(iterations, (0.5/60.0), 11, 4, 1, 30, 5, 20, 10);
+        this(/*43200*/iterations, /*(0.5/60.0)*/-1, 11, 4, 1, 30, 15, 60, 10);
     }
     
     // read all items from text file to an arraylist of items
