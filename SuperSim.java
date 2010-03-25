@@ -147,7 +147,7 @@ public class SuperSim
      * A simulation for a branch of SuperSim with default values.
      * 
      * The default values used are: customerProb -1, itemsMean 11, 
-     * itemsStandardDeviation 4, itemsLowerLimit 1, itemsUpperLimit 30, checkOutConstant 15, shopFloorContant 60, 
+     * itemsStandardDeviation 4, itemsLowerLimit 1, itemsUpperLimit 30, checkOutConstant 15, shopFloorConstant 60, 
      * expressCheckOutItemsLimit 10.
      * 
      * @param iterations How many iterations to run the simulation for. For best results, think of an iteration as a second.
