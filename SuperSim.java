@@ -36,6 +36,8 @@ public class SuperSim
     private final int shopFloorConstant;
     private final int expressCheckOutItemsLimit;
     private final int checkOutConstant;
+    private final int checkOutCustomerLimit;
+    private final double closeCheckOutConstant;
     // Non-generic fields for diagnostics
     private int totalCustomers;
     private ArrayList<Customer> processedCustomers;
@@ -66,7 +68,7 @@ public class SuperSim
      * @param expressCheckOutItemsLimit The amount of items under and including which customers can use the express 
      * Check-Out.
      */
-    public SuperSim(int iterations, double customerProb, int itemsMean, int itemsStandardDeviation, int itemsLowerLimit, int itemsUpperLimit, int checkOutConstant, int shopFloorConstant, int expressCheckOutItemsLimit)
+    public SuperSim(int iterations, double customerProb, int checkOutCustomerLimit, double closeCheckOutConstant, int itemsMean, int itemsStandardDeviation, int itemsLowerLimit, int itemsUpperLimit, int checkOutConstant, int shopFloorConstant, int expressCheckOutItemsLimit)
     {
         // Structure
         rand = new Random();
@@ -89,6 +91,8 @@ public class SuperSim
         this.checkOutConstant = checkOutConstant;
         this.shopFloorConstant = shopFloorConstant;
         this.expressCheckOutItemsLimit = expressCheckOutItemsLimit;
+        this.checkOutCustomerLimit = checkOutCustomerLimit;
+        this.closeCheckOutConstant = closeCheckOutConstant;
         // stats
         processedCustomers = new ArrayList<Customer>();
         checkOutCountChanges = new HashMap<Integer, Integer>();
@@ -164,7 +168,7 @@ public class SuperSim
      */
     public SuperSim(int iterations)
     {
-        this(/*43200*/iterations, /*(0.5/60.0)*/-1, 11, 4, 1, 30, 15, 60, 10);
+        this(/*43200*/iterations, /*(0.5/60.0)*/-1, 4, 2, 11, 4, 1, 30, 15, 60, 10);
     }
     
     // read all items from text file to an arraylist of items
@@ -188,6 +192,25 @@ public class SuperSim
             checkCustomerDepart(checkOut);
         }
         
+        int oldCheckOutCount = checkOuts.size();
+        // If there's more than one CheckOut and the avergage Customers in each one is less than the constant, 
+        // then close a CheckOut if there's an empty one to be closed.
+        if (checkOuts.size() > 1) {
+            int customersAtCheckOuts = 0;
+            for (CheckOut checkOut : checkOuts) {
+                customersAtCheckOuts += checkOut.size();
+            }
+            double mean = (double) customersAtCheckOuts / (double) checkOuts.size();
+            if (mean <= closeCheckOutConstant) {
+                for (CheckOut checkOut : checkOuts) {
+                    if (checkOut.isEmpty()) {
+                        checkOuts.remove(checkOut);
+                        break;
+                    }
+                }
+            }
+        }
+        
         // Move Customers from ShopFloor to CheckOuts
         ArrayList<Customer> customersToBeMovedToCheckOuts = new ArrayList<Customer>();
         for(Customer customer: shopFloor)
@@ -198,7 +221,6 @@ public class SuperSim
             }
         }
         
-        int oldCheckOutCount = checkOuts.size();
         for(Customer customer: customersToBeMovedToCheckOuts)
         {
             shopFloor.remove(customer);
@@ -207,7 +229,7 @@ public class SuperSim
             }
             else {
                 int bestCheckOut = 0;
-                int bestCheckOutSize = 4;
+                int bestCheckOutSize = checkOutCustomerLimit;
                 int checkOutCount = checkOuts.size();
                 for (int i = 0; i < checkOutCount; i++) {
                     int checkOutSize = checkOuts.get(i).size();
@@ -216,7 +238,7 @@ public class SuperSim
                         bestCheckOutSize = checkOutSize;
                     }
                 }
-                if (bestCheckOutSize < 4) {
+                if (bestCheckOutSize < checkOutCustomerLimit) {
                     checkOuts.get(bestCheckOut).add(customer);
                 }
                 else {
@@ -227,7 +249,7 @@ public class SuperSim
             }
         }
         int checkOutCountDifference = checkOuts.size() - oldCheckOutCount;
-        if (checkOutCountDifference > 0) {
+        if (checkOutCountDifference != 0) {
             checkOutCountChanges.put(iterationsSoFar, checkOutCountDifference);
         }
         
