@@ -1,5 +1,3 @@
-In-Course-Assessment{
-   .file.include=*.*;
-   .file.jar=ICA_<username>.jar;
-   .transport=http://www.csd.abdn.ac.uk/~tnorman/uploader.php?identity=<username>&project=<simpletitle>;
+CS1512{
+    .insert = http://www.csd.abdn.ac.uk/~wvasconc/teaching/CS1512/submission.defs;
 }
