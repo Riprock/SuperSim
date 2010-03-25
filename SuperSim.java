@@ -1,6 +1,6 @@
 
 /**
- * Write a description of class Simulation here.
+ * A simulation for a branch of SuperSim.
  * 
  * @author Fergal Hainey, Janie Sinclair, Chiedu Agborh, Yowana Kuvoka
  * @version 2010.03.02
@@ -52,23 +52,9 @@ public class SuperSim
      * point arithmetic allowed) and barcode (a 12 character string of numbers).
      * 
      * @param iterations How many iterations to run the simulation for. For best results, think of an iteration as a second.
-     * @param customerProb The probability of a new customer arriving every iteration. If negative, SuperSim will look in 
-     * the file customerprobs.csv for CSV data for plotting customer arrival probability, if the file doesn't exist the 
-     * user will be prompted for a file. The data file needs just two columns: iteration and probability. The first data 
-     * point must be for iteration 0 or the simulation will exit. Values for between specified iterations will be 
-     * calculated assuming a linear progression between data points.
-     * @param itemsMean The mean of the normal distribution used for calculating how many items each customer will buy.
-     * @param itemsStandardDeviation the standard deviation for the normal distribution used for calculating how many 
-     * items each customer will buy.
-     * @param itemsLowerLimit The lower limit for the amount of items each customer will buy.
-     * @param itemsUpperLimit The upper limit for the amount of items each customer will buy.
-     * @param checkOutConstant The amount of iterations it takes to process each item at the Check-Outs.
-     * @param shopFloorConstant The amount of iterations it takes to find each item on the shop floor before going to the 
-     * Check-Outs.
-     * @param expressCheckOutItemsLimit The amount of items under and including which customers can use the express 
-     * Check-Out.
+     * @param params A SuperSimParams object containing the simulation parameters.
      */
-    public SuperSim(int iterations, double customerProb, int checkOutCustomerLimit, double closeCheckOutConstant, int itemsMean, int itemsStandardDeviation, int itemsLowerLimit, int itemsUpperLimit, int checkOutConstant, int shopFloorConstant, int expressCheckOutItemsLimit)
+    public SuperSim(int iterations, SuperSimParams params)
     {
         // Structure
         rand = new Random();
@@ -83,16 +69,16 @@ public class SuperSim
         iterationLimit = iterations;
         
         // Initialising
-        this.customerProb = customerProb;
-        this.itemsMean = itemsMean;
-        this.itemsStandardDeviation = itemsStandardDeviation;
-        this.itemsLowerLimit = itemsLowerLimit;
-        this.itemsUpperLimit = itemsUpperLimit;
-        this.checkOutConstant = checkOutConstant;
-        this.shopFloorConstant = shopFloorConstant;
-        this.expressCheckOutItemsLimit = expressCheckOutItemsLimit;
-        this.checkOutCustomerLimit = checkOutCustomerLimit;
-        this.closeCheckOutConstant = closeCheckOutConstant;
+        this.customerProb = params.getCustomerProb();
+        this.itemsMean = params.getItemsMean();
+        this.itemsStandardDeviation = params.getItemsStandardDeviation();
+        this.itemsLowerLimit = params.getItemsLowerLimit();
+        this.itemsUpperLimit = params.getItemsUpperLimit();
+        this.checkOutConstant = params.getCheckOutConstant();
+        this.shopFloorConstant = params.getShopFloorConstant();
+        this.expressCheckOutItemsLimit = params.getExpressCheckOutItemsLimit();
+        this.checkOutCustomerLimit = params.getCheckOutCustomerLimit();
+        this.closeCheckOutConstant = params.getCloseCheckOutConstant();
         // stats
         processedCustomers = new ArrayList<Customer>();
         checkOutCountChanges = new HashMap<Integer, Integer>();
@@ -160,7 +146,7 @@ public class SuperSim
     /**
      * A simulation for a branch of SuperSim with default values.
      * 
-     * See the long constructor for more details. The default values used are: customerProb -1, itemsMean 11, 
+     * The default values used are: customerProb -1, itemsMean 11, 
      * itemsStandardDeviation 4, itemsLowerLimit 1, itemsUpperLimit 30, checkOutConstant 15, shopFloorContant 60, 
      * expressCheckOutItemsLimit 10.
      * 
@@ -168,7 +154,7 @@ public class SuperSim
      */
     public SuperSim(int iterations)
     {
-        this(/*43200*/iterations, /*(0.5/60.0)*/-1, 4, 2, 11, 4, 1, 30, 15, 60, 10);
+        this(/*43200*/iterations, new SuperSimParams(/*(0.5/60.0)*/-1, 4, 2, 11, 4, 1, 30, 15, 60, 10));
     }
     
     // read all items from text file to an arraylist of items
