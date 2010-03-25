@@ -8,11 +8,9 @@
 
 import java.util.Random;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.HashMap;
 import simpleIO.TextReader;
 import simpleIO.TextWriter;
-import java.util.Set;
 import java.io.IOException;
 
 public class SuperSim
@@ -29,7 +27,6 @@ public class SuperSim
     private Integer[] probDataIterations;
     private Double[] probDataProbs;
     private int lastProbIndex;
-    private int totalCustomers;
     // Stuff for the normal distribution
     private int itemsMean;
     private int itemsStandardDeviation;
@@ -40,10 +37,10 @@ public class SuperSim
     private final int expressCheckOutItemsLimit;
     private final int checkOutConstant;
     // Non-generic fields for diagnostics
-    private int totalCustomersProcessed;
-    private int totalWaitIterations;
-    private int totalExpressCustomersProcessed;
-    private HashMap<Integer, ArrayList<String>> loyaltyPurchases;
+    private int totalCustomers;
+    private ArrayList<Customer> processedCustomers;
+    private Stats stats;
+    private HashMap<Integer, Integer> checkOutCountChanges;
 
     /**
      * A simulation for a branch of SuperSim.
@@ -93,7 +90,8 @@ public class SuperSim
         this.shopFloorConstant = shopFloorConstant;
         this.expressCheckOutItemsLimit = expressCheckOutItemsLimit;
         // stats
-        loyaltyPurchases = new HashMap<Integer, ArrayList<String>>();
+        processedCustomers = new ArrayList<Customer>();
+        checkOutCountChanges = new HashMap<Integer, Integer>();
         
         // get Items
         stockList = new HashMap<String, Item>();
@@ -134,6 +132,25 @@ public class SuperSim
         for (int i = 0; i < iterations; i++) {
             oneIteration();
         }
+        
+        int totalWaitIterations = 0;
+        int totalExpressWaitIterations = 0;
+        int expressCount = 0;
+        for (Customer customer : processedCustomers) {
+            if (customer.getItems().size() <= expressCheckOutItemsLimit) {
+                expressCount++;
+                totalExpressWaitIterations += customer.getArrivedFrontCheckOut() - customer.getDepartShopFloor();
+            }
+            totalWaitIterations += customer.getArrivedFrontCheckOut() - customer.getDepartShopFloor();
+        }
+        stats = new Stats(
+            totalCustomers,
+            processedCustomers.size(),
+            expressCount,
+            ((double) totalWaitIterations / (double) processedCustomers.size()),
+            ((double) totalExpressWaitIterations / (double) expressCount),
+            checkOutCountChanges
+        );
     }
     
     /**
@@ -181,6 +198,7 @@ public class SuperSim
             }
         }
         
+        int oldCheckOutCount = checkOuts.size();
         for(Customer customer: customersToBeMovedToCheckOuts)
         {
             shopFloor.remove(customer);
@@ -207,6 +225,10 @@ public class SuperSim
                     checkOuts.add(newCheckOut);
                 }
             }
+        }
+        int checkOutCountDifference = checkOuts.size() - oldCheckOutCount;
+        if (checkOutCountDifference > 0) {
+            checkOutCountChanges.put(iterationsSoFar, checkOutCountDifference);
         }
         
         double currentCustomerProb = customerProb;
@@ -266,16 +288,7 @@ public class SuperSim
     }
     
     private void gatherDepartStats(Customer customer) {
-        totalCustomersProcessed++;
-        totalWaitIterations += customer.getArrivedFrontCheckOut() - customer.getDepartShopFloor();
-        if (customer.getNumberOfItems() <= expressCheckOutItemsLimit) {
-            totalExpressCustomersProcessed++;
-        }
-        ArrayList<String> barcodesList = new ArrayList<String>();
-        for (Item item : customer.getItems()) {
-            barcodesList.add(item.getBarcode());
-        }
-        loyaltyPurchases.put(customer.getId(), barcodesList);
+        processedCustomers.add(customer);
     }
     
     private void newCustomer()
@@ -295,11 +308,12 @@ public class SuperSim
     {
         System.out.println(iterationLimit + " iterations");
         System.out.println(((customerProb < 0) ? "Variable" : customerProb) + " probability of a new customer every iteration");
-        System.out.println(checkOuts.size() + " Check-Outs needed in addition to the express Check-Out");
+        System.out.println(stats.getMaxCheckOutCount() + " Check-Outs needed in addition to the express Check-Out");
         System.out.println(totalCustomers + " customers in total");
-        System.out.println(totalCustomersProcessed + " customers processed");
-        System.out.println(totalExpressCustomersProcessed + " customers used the express Check-Out");
-        System.out.println("mean of " + ((float) totalWaitIterations / (float) totalCustomersProcessed) + " iterations before customer reaches front of queue");
+        System.out.println(processedCustomers.size() + " customers processed");
+        System.out.println(stats.getTotalExpressCustomers() + " customers used the express Check-Out");
+        System.out.println("mean of " + stats.getMeanIterationsQueueing() + " iterations before customer reaches front of Check-Out queue");
+        System.out.println("mean of " + stats.getMeanIterationsExpressQueueing() + " iterations before customer reaches front of express Check-Out queue");
         System.out.println();
     }
     
@@ -313,10 +327,11 @@ public class SuperSim
     public void writeLoyalty()
     {
         String loyaltyOutput = "";
-        for (Map.Entry<Integer, ArrayList<String>> entry : loyaltyPurchases.entrySet()) {
-            loyaltyOutput += (entry.getKey() + "\n");
+        for (Customer customer : processedCustomers) {
+            loyaltyOutput += (customer.getId() + "\n");
             int totalPence = 0;
-            for (String barcode : entry.getValue()) {
+            for (Item item : customer.getItems()) {
+                String barcode = item.getBarcode();
                 totalPence += stockList.get(barcode).getPrice();
                 loyaltyOutput += (barcode + "\n");
             }
@@ -363,6 +378,11 @@ public class SuperSim
     public String[] getStockListBarcodes()
     {
         return stockListBarcodes;
+    }
+    
+    public Stats getStats()
+    {
+        return stats;
     }
     
     // Simulation
