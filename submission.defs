@@ -1,0 +1,5 @@
+In-Course-Assessment{
+   .file.include=*.*;
+   .file.jar=ICA_<username>.jar;
+   .transport=http://www.csd.abdn.ac.uk/~tnorman/uploader.php?identity=<username>&project=<simpletitle>;
+}
